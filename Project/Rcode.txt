@@ -1,0 +1,56 @@
+library(RWeka)
+?Weka_classifiers
+md <-make_Weka_classifier("weka/classifiers/functions/MultilayerPerceptron")
+digit_data <- read.arff("f:/datamining600/project/train_8400_norm_2.arff")
+test_set_indexes <- sample(1:nrow(digit_data), 840)
+train_set_indexes <- setdiff(1:nrow(digit_data),test_set_indexes)
+test_data <- digit_data[test_set_indexes, ]
+train_data <-digit_data[train_set_indexes, ]
+WOW(md)
+trained_model <- md(digit_data$label ~ ., data = digit_data, subset <- train_set_indexes, control = Weka_control(G=F, L=0.3, H=128, N=100, c=F, I=F, D=F, B=F))
+test_results <- predict(trained_model, newdata = test_data[,-1])
+table(test_results, test_data[ ,1], dnn = list("predicted","actual"))
+evaluate_Weka_classifier(trained_model, class = TRUE,numFolds = 5)
+
+> evaluate_Weka_classifier(trained_model,class = TRUE,numFolds = 5)
+=== 5 Fold Cross Validation ===
+
+=== Summary ===
+
+Correctly Classified Instances        6292               83.2275 %
+Incorrectly Classified Instances      1268               16.7725 %
+Kappa statistic                          0.8135
+Mean absolute error                      0.0362
+Root mean squared error                  0.1734
+Relative absolute error                 20.1395 %
+Root relative squared error             57.7939 %
+Total Number of Instances             7560     
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0.933    0.010    0.909      0.933    0.921      0.912    0.990     0.950     0
+                 0.942    0.031    0.788      0.942    0.858      0.843    0.982     0.875     1
+                 0.780    0.008    0.908      0.780    0.839      0.827    0.956     0.877     2
+                 0.801    0.018    0.833      0.801    0.817      0.797    0.959     0.827     3
+                 0.864    0.019    0.827      0.864    0.845      0.829    0.970     0.831     4
+                 0.734    0.019    0.803      0.734    0.767      0.744    0.938     0.767     5
+                 0.903    0.012    0.891      0.903    0.897      0.886    0.984     0.931     6
+                 0.818    0.015    0.867      0.818    0.842      0.823    0.970     0.886     7
+                 0.709    0.016    0.832      0.709    0.765      0.745    0.949     0.815     8
+                 0.830    0.037    0.709      0.830    0.765      0.740    0.957     0.752     9
+Weighted Avg.    0.832    0.019    0.836      0.832    0.832      0.815    0.966     0.851     
+
+=== Confusion Matrix ===
+
+   a   b   c   d   e   f   g   h   i   j   <-- classified as
+ 692   1   2   3   5  15   6   6   2  10 |   a = 0
+   1 779   8   3   2   5   3  11   8   7 |   b = 1
+  18  23 561  24  14   3  22  19  20  15 |   c = 2
+   8  19  19 609   3  44   4  15  20  19 |   d = 3
+   2   9   0   1 631   0  15   4   2  66 |   e = 4
+  10  26   8  51  22 535  20   6  29  22 |   f = 5
+  15  17   1   1   6  18 651   0   9   3 |   g = 6
+   4  27   9   3  11   1   0 678   9  87 |   h = 7
+  10  79   9  31  11  41   9   4 535  26 |   i = 8
+   1   9   1   5  58   4   1  39   9 621 |   j = 9
